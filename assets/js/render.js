@@ -4,6 +4,10 @@
  * Componentes reutilizables para construir el "documento navegable"
  * a partir de los datos en data.js. No hay backend ni build step:
  * este script corre en el navegador y arma el DOM directamente.
+ *
+ * Esta versión agrega: índice lateral navegable (con scrollspy),
+ * anclas por evaluación, y navegación anterior/siguiente entre
+ * tarjetas. No cambia ningún dato de data.js.
  * ------------------------------------------------------------------
  */
 
@@ -98,11 +102,12 @@ function renderScreenshotSection(capturas, sinEvidencia, altFallback) {
 }
 
 /** Badge de estado para una Ley UX: Cumple / Rompe / Cumple parcialmente. */
-function renderEstadoBadge(estado) {
+function renderEstadoBadge(estado, size) {
   const icon = estado === "cumple" ? "✓" : estado === "rompe" ? "✕" : "±";
   const label = ESTADO_LABELS[estado] || estado;
+  const sizeClass = size === "sm" ? " badge--sm" : "";
   return `
-    <span class="badge badge--${escapeHtml(estado)}">
+    <span class="badge badge--${escapeHtml(estado)}${sizeClass}">
       <span class="badge__icon" aria-hidden="true">${icon}</span>
       ${escapeHtml(label)}
     </span>
@@ -110,20 +115,45 @@ function renderEstadoBadge(estado) {
 }
 
 /** Badge de severidad 0–4 para una heurística de Nielsen. */
-function renderSeveridadBadge(nivel) {
+function renderSeveridadBadge(nivel, size) {
   const label = SEVERIDAD_LABELS[nivel] || "Sin clasificar";
+  const sizeClass = size === "sm" ? " severity--sm" : "";
   return `
-    <span class="severity severity--${nivel}">
+    <span class="severity severity--${nivel}${sizeClass}">
       <span class="severity__value">${nivel}</span>
       <span class="severity__label">${escapeHtml(label)}</span>
     </span>
   `;
 }
 
-/** Tarjeta de evaluación para una Ley UX. */
-function renderLeyCard(ley) {
+/** Fila de navegación anterior/siguiente + volver al índice, para el pie de cada tarjeta. */
+function renderCardNav(kind, items, currentIndex) {
+  const prev = items[currentIndex - 1];
+  const next = items[currentIndex + 1];
+  const prefix = kind === "ley" ? "ley" : "heuristica";
+  const indexHref = kind === "ley" ? "#leyes-indice" : "#heuristicas-indice";
+
+  const prevHtml = prev
+    ? `<a class="card-nav__link card-nav__link--prev" href="#${prefix}-${prev.numero}">← ${escapeHtml(prev.nombre)}</a>`
+    : `<span class="card-nav__link card-nav__link--disabled">← Anterior</span>`;
+
+  const nextHtml = next
+    ? `<a class="card-nav__link card-nav__link--next" href="#${prefix}-${next.numero}">${escapeHtml(next.nombre)} →</a>`
+    : `<span class="card-nav__link card-nav__link--disabled">Siguiente →</span>`;
+
   return `
-    <article class="eval-card">
+    <div class="card-nav">
+      ${prevHtml}
+      <a class="card-nav__index" href="${indexHref}">Índice ↑</a>
+      ${nextHtml}
+    </div>
+  `;
+}
+
+/** Tarjeta de evaluación para una Ley UX. */
+function renderLeyCard(ley, index, items) {
+  return `
+    <article class="eval-card" id="ley-${ley.numero}" data-index-id="ley-${ley.numero}">
       <div class="eval-card__main">
         <div class="eval-card__header">
           <div class="eval-card__title-group">
@@ -141,23 +171,27 @@ function renderLeyCard(ley) {
         <h3>Captura de pantalla</h3>
         ${renderScreenshotSection(ley.capturas, ley.sinEvidencia, ley.nombre)}
       </div>
+      ${renderCardNav("ley", items, index)}
     </article>
   `;
 }
 
 /** Tarjeta de evaluación para una heurística de Nielsen. */
-function renderHeuristicaCard(h) {
+function renderHeuristicaCard(h, index, items) {
   const impactoHtml = h.impacto
     ? `<p>${escapeHtml(h.impacto)}</p>`
     : `<p class="placeholder-text">No incluido en el análisis original (el Excel de trabajo no registra este campo).</p>`;
 
   return `
-    <article class="eval-card">
+    <article class="eval-card" id="heuristica-${h.numero}" data-index-id="heuristica-${h.numero}">
       <div class="eval-card__main">
         <div class="eval-card__header">
           <div class="eval-card__title-group">
             <p class="eval-card__number">Heurística N.º ${h.numero}</p>
-            <h2 class="eval-card__title">${escapeHtml(h.nombre)}</h2>
+            <h2 class="eval-card__title">
+              <span class="eval-card__monogram">H${h.numero}</span>
+              ${escapeHtml(h.nombre)}
+            </h2>
           </div>
           ${renderSeveridadBadge(h.severidad)}
         </div>
@@ -174,6 +208,7 @@ function renderHeuristicaCard(h) {
         <h3>Captura de pantalla</h3>
         ${renderScreenshotSection(h.capturas, h.sinEvidencia, h.nombre)}
       </div>
+      ${renderCardNav("heuristica", items, index)}
     </article>
   `;
 }
@@ -200,30 +235,103 @@ function renderSeveridadLegend(mount) {
     .join("");
 }
 
-/** Arma la grilla de tarjetas de Leyes UX. */
+/**
+ * Índice lateral (o superior en mobile) con todas las leyes/heurísticas,
+ * su número y un indicador visual compacto de estado/severidad, para
+ * que se puedan identificar y recorrer de un vistazo.
+ */
+function renderIndex(mount, kind, items) {
+  if (!mount) return;
+  const prefix = kind === "ley" ? "ley" : "heuristica";
+  const title = kind === "ley" ? "Leyes evaluadas" : "Heurísticas evaluadas";
+
+  const rows = items
+    .map((item) => {
+      const numLabel = kind === "ley" ? String(item.numero).padStart(2, "0") : `H${item.numero}`;
+      const indicator =
+        kind === "ley" ? renderEstadoBadge(item.estado, "sm") : renderSeveridadBadge(item.severidad, "sm");
+      return `
+        <li>
+          <a href="#${prefix}-${item.numero}" data-index-link="${prefix}-${item.numero}">
+            <span class="eval-index__num">${numLabel}</span>
+            <span class="eval-index__name">${escapeHtml(item.nombre)}</span>
+            ${indicator}
+          </a>
+        </li>
+      `;
+    })
+    .join("");
+
+  mount.innerHTML = `
+    <p class="eval-index__title" id="${prefix}s-indice">${title}</p>
+    <ol class="eval-index__list">${rows}</ol>
+  `;
+}
+
+/**
+ * Activa el resaltado del ítem del índice correspondiente a la
+ * tarjeta visible mientras se recorre la página (scrollspy liviano,
+ * sin dependencias externas).
+ */
+function initScrollSpy(cardSelector) {
+  const cards = document.querySelectorAll(cardSelector);
+  const links = document.querySelectorAll("[data-index-link]");
+  if (!cards.length || !links.length || typeof IntersectionObserver === "undefined") return;
+
+  const linkFor = (id) => document.querySelector(`[data-index-link="${id}"]`);
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const id = entry.target.getAttribute("data-index-id");
+        const link = linkFor(id);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach((l) => l.removeAttribute("aria-current"));
+          link.setAttribute("aria-current", "true");
+        }
+      });
+    },
+    { rootMargin: "-15% 0px -70% 0px", threshold: 0 }
+  );
+
+  cards.forEach((card) => observer.observe(card));
+}
+
+/** Arma la grilla de tarjetas de Leyes UX + su índice navegable. */
 function renderLeyesUXPage() {
   const grid = document.querySelector("[data-component='leyes-grid']");
   if (!grid) return;
-  grid.innerHTML = LEYES_UX.map(renderLeyCard).join("");
+  grid.innerHTML = LEYES_UX.map((ley, i) => renderLeyCard(ley, i, LEYES_UX)).join("");
 
   const legend = document.querySelector("[data-component='estado-legend']");
   if (legend) renderEstadoLegend(legend);
 
   const count = document.querySelector("[data-component='leyes-count']");
   if (count) count.textContent = LEYES_UX.length;
+
+  const index = document.querySelector("[data-component='leyes-index']");
+  renderIndex(index, "ley", LEYES_UX);
+
+  initScrollSpy("[data-component='leyes-grid'] .eval-card");
 }
 
-/** Arma la grilla de tarjetas de Heurísticas de Nielsen. */
+/** Arma la grilla de tarjetas de Heurísticas de Nielsen + su índice navegable. */
 function renderHeuristicasPage() {
   const grid = document.querySelector("[data-component='heuristicas-grid']");
   if (!grid) return;
-  grid.innerHTML = HEURISTICAS_NIELSEN.map(renderHeuristicaCard).join("");
+  grid.innerHTML = HEURISTICAS_NIELSEN.map((h, i) => renderHeuristicaCard(h, i, HEURISTICAS_NIELSEN)).join("");
 
   const legend = document.querySelector("[data-component='severidad-legend']");
   if (legend) renderSeveridadLegend(legend);
 
   const count = document.querySelector("[data-component='heuristicas-count']");
   if (count) count.textContent = HEURISTICAS_NIELSEN.length;
+
+  const index = document.querySelector("[data-component='heuristicas-index']");
+  renderIndex(index, "heuristica", HEURISTICAS_NIELSEN);
+
+  initScrollSpy("[data-component='heuristicas-grid'] .eval-card");
 }
 
 /** Completa los datos del producto en la home. */
