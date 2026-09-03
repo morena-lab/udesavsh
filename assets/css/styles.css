@@ -123,6 +123,22 @@ a {
   color: var(--color-text-faint);
 }
 
+.brand__name {
+  display: block;
+  max-width: 60vw;
+}
+
+/* En pantallas chicas el nombre completo del producto puede ser largo;
+   se trunca en una linea en vez de partir el header en varias filas. */
+@media (max-width: 640px) {
+  .brand__name {
+    max-width: 68vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .main-nav {
   display: flex;
   gap: var(--space-2);
@@ -489,11 +505,12 @@ main {
 }
 
 .placeholder-box--tag::before {
-  content: "PLACEHOLDER";
+  content: "Sin captura";
   display: block;
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--color-placeholder-text);
   margin-bottom: var(--space-1);
 }
@@ -708,9 +725,16 @@ html {
 
 /* Variantes compactas de los badges, para usar dentro del índice */
 .badge--sm {
-  padding: 2px 6px;
-  font-size: 0.62rem;
+  padding: 4px 6px;
   flex-shrink: 0;
+}
+
+.badge--sm .badge__label {
+  display: none;
+}
+
+.badge--sm .badge__icon {
+  font-size: 0.85rem;
 }
 
 .severity--sm {

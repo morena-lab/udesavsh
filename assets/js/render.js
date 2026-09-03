@@ -12,6 +12,12 @@
  * ------------------------------------------------------------------
  */
 
+/** Id del <a id="..."> del índice de cada sección (única fuente de verdad). */
+const INDEX_ANCHOR_ID = {
+  ley: "leyes-indice",
+  heuristica: "heuristicas-indice",
+};
+
 /** Escapa texto para insertarlo de forma segura como HTML. */
 function escapeHtml(str) {
   if (str === null || str === undefined) return "";
@@ -45,7 +51,7 @@ function renderHeader(activePage) {
     <div class="site-header__inner">
       <a class="brand" href="index.html">
         <span class="brand__eyebrow">Evaluación UX</span>
-        ${escapeHtml(PRODUCTO_EVALUADO.nombre)}
+        <span class="brand__name">${escapeHtml(PRODUCTO_EVALUADO.nombre)}</span>
       </a>
       <nav class="main-nav" aria-label="Navegación principal">
         ${navHtml}
@@ -135,7 +141,7 @@ function renderEstadoBadge(estado, size) {
   return `
     <span class="badge badge--${escapeHtml(estado)}${sizeClass}">
       <span class="badge__icon" aria-hidden="true">${icon}</span>
-      ${escapeHtml(label)}
+      <span class="badge__label">${escapeHtml(label)}</span>
     </span>
   `;
 }
@@ -157,7 +163,7 @@ function renderCardNav(kind, items, currentIndex) {
   const prev = items[currentIndex - 1];
   const next = items[currentIndex + 1];
   const prefix = kind === "ley" ? "ley" : "heuristica";
-  const indexHref = kind === "ley" ? "#leyes-indice" : "#heuristicas-indice";
+  const indexHref = `#${INDEX_ANCHOR_ID[kind]}`;
 
   const prevHtml = prev
     ? `<a class="card-nav__link card-nav__link--prev" href="#${prefix}-${prev.numero}">← ${escapeHtml(prev.nombre)}</a>`
@@ -276,9 +282,15 @@ function renderIndex(mount, kind, items) {
       const numLabel = kind === "ley" ? String(item.numero).padStart(2, "0") : `H${item.numero}`;
       const indicator =
         kind === "ley" ? renderEstadoBadge(item.estado, "sm") : renderSeveridadBadge(item.severidad, "sm");
+      const statusText =
+        kind === "ley" ? ESTADO_LABELS[item.estado] || item.estado : `Severidad ${item.severidad} — ${SEVERIDAD_LABELS[item.severidad] || ""}`;
       return `
         <li>
-          <a href="#${prefix}-${item.numero}" data-index-link="${prefix}-${item.numero}">
+          <a
+            href="#${prefix}-${item.numero}"
+            data-index-link="${prefix}-${item.numero}"
+            aria-label="${numLabel} — ${escapeHtml(item.nombre)} — ${escapeHtml(statusText)}"
+          >
             <span class="eval-index__num">${numLabel}</span>
             <span class="eval-index__name">${escapeHtml(item.nombre)}</span>
             ${indicator}
@@ -289,7 +301,7 @@ function renderIndex(mount, kind, items) {
     .join("");
 
   mount.innerHTML = `
-    <p class="eval-index__title" id="${prefix}s-indice">${title}</p>
+    <p class="eval-index__title" id="${INDEX_ANCHOR_ID[kind]}">${title}</p>
     <ol class="eval-index__list">${rows}</ol>
   `;
 }
