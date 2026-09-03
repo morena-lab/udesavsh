@@ -3,21 +3,33 @@
  * ------------------------------------------------------------------
  * Fuente única de contenido para las dos evaluaciones.
  *
- * El texto de "descripcion" / "explicacion" y los estados de
- * cumplimiento / severidad provienen tal cual de los PDFs de análisis
- * (Leyes_de_UX.pdf y Heuristicas_de_Nielsen.pdf) que exportan el
- * Excel de trabajo. No se inventó ni completó ningún juicio de UX.
+ * El texto de "descripcion" / "explicacion", los estados de
+ * cumplimiento / severidad y las capturas de pantalla provienen del
+ * análisis real (Google Sheets exportado a los PDF "Leyes_de_UX.pdf"
+ * y "Heuristicas_de_Nielsen.pdf"). No se inventó, completó ni
+ * "mejoró" ningún juicio de UX: el texto es el mismo, solo se
+ * hicieron ajustes mínimos de formato para que se lea bien en la web.
  *
- * Los campos marcados explícitamente como PLACEHOLDER no existían en
- * la fuente y deben completarse a mano (ej: capturas como archivos de
- * imagen reales, o el campo "impacto" de cada heurística, que el
- * Excel original no incluía).
+ * Las capturas fueron extraídas directamente de las imágenes
+ * incrustadas en esos PDF (no son capturas genéricas de internet) y
+ * asociadas a cada evaluación verificando visualmente su contenido
+ * contra el texto de la fila correspondiente. Cuando una evaluación
+ * no tenía captura en el análisis original (el propio documento dice
+ * "no hay evidencia"), el campo queda vacío ([]) — no se inventó
+ * ninguna.
+ *
+ * El campo "impacto" de las heurísticas de Nielsen no existe en el
+ * Excel/PDF original: se deja explícitamente en null y la interfaz
+ * lo señala como dato no incluido en el análisis, en vez de
+ * inventarlo.
  * ------------------------------------------------------------------
  */
 
 const PRODUCTO_EVALUADO = {
-  // PLACEHOLDER: confirmar el nombre exacto/oficial del producto.
-  nombre: "[PLACEHOLDER — Nombre del producto evaluado]",
+  // Confirmado a partir de una de las propias capturas del análisis
+  // (barra de direcciones visible en la evidencia de "Umbral de
+  // Doherty"): el dominio real de la plataforma es gestion.udesa.edu.ar.
+  nombre: "Plataforma de Gestión de Alumnos — Universidad de San Andrés (gestion.udesa.edu.ar)",
   descripcion:
     "Evaluación heurística y de leyes de UX realizada sobre la plataforma " +
     "de autogestión académica utilizada por estudiantes. El análisis " +
@@ -29,6 +41,10 @@ const PRODUCTO_EVALUADO = {
  * Estado posible para una Ley UX: "cumple" | "rompe" | "parcial"
  * ("parcial" se usa para el único caso de "Semi-Cumple" del análisis
  * original — Umbral de Doherty).
+ *
+ * "capturas" es un array de { src, alt } — puede tener 0, 1 o varias
+ * imágenes, según cuántas se hayan usado como evidencia en el Excel
+ * original para esa ley.
  */
 const LEYES_UX = [
   {
@@ -38,7 +54,10 @@ const LEYES_UX = [
     descripcion:
       "Los botones están cerca uno de otro y con tamaño adecuado, aunque " +
       "algunos elementos podrían destacarse más.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u01-fits-a-login.png", alt: "Formulario de inicio de sesión con botones agrupados" },
+      { src: "assets/img/u01-fits-b-menu.png", alt: "Menú lateral con sección Cursos expandida" },
+    ],
   },
   {
     numero: 2,
@@ -48,7 +67,9 @@ const LEYES_UX = [
       "Ningún elemento se diferencia del resto, aunque haya una jerarquía " +
       "de relevancia clara. El promedio o las notas de los finales son " +
       "mucho más importantes que otras notas.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u02-von-restorff.png", alt: "Tabla de notas donde todas las filas tienen el mismo peso visual" },
+    ],
   },
   {
     numero: 3,
@@ -57,7 +78,9 @@ const LEYES_UX = [
     descripcion:
       "El diseño de esta página es poco estético / \"lindo\" y esto no " +
       "ayuda a mejorar su usabilidad.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u03-estetica-usabilidad.png", alt: "Pantalla de Iniciar trámite/consulta, con diseño básico" },
+    ],
   },
   {
     numero: 4,
@@ -67,7 +90,9 @@ const LEYES_UX = [
       "Hay demasiadas opciones y secciones visibles al mismo tiempo, por " +
       "lo que cuesta decidir rápidamente dónde entrar para realizar una " +
       "tarea.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u04-hick.png", alt: "Menú lateral completo con todas las secciones expandidas" },
+    ],
   },
   {
     numero: 5,
@@ -76,7 +101,9 @@ const LEYES_UX = [
     descripcion:
       "Se muestra mucha información a la vez y no siempre está bien " +
       "agrupada.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u05-miller.png", alt: "Agenda semanal con múltiples bloques de clases" },
+    ],
   },
   {
     numero: 6,
@@ -85,7 +112,10 @@ const LEYES_UX = [
     descripcion:
       "Hay secciones, textos o botones que podrían eliminarse sin perder " +
       "funcionalidad.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u06-occam-a-cards.png", alt: "Tarjetas redundantes de Admisión y Alumno" },
+      { src: "assets/img/u06-occam-b-links.png", alt: "Panel de links (Biblioteca, Campus Virtual, Tesorería)" },
+    ],
   },
   {
     numero: 7,
@@ -98,7 +128,9 @@ const LEYES_UX = [
       "Recursando, Baja...) y además comprender por su cuenta cuál es la " +
       "cursada correcta, qué grupo le corresponde y cómo modificar su " +
       "inscripción.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u07-tesler.png", alt: "Tabla de inscripciones con muchas columnas" },
+    ],
   },
   {
     numero: 8,
@@ -108,7 +140,10 @@ const LEYES_UX = [
       "Las pantallas de confirmación, error y éxito son poco emocionantes " +
       "y bastante simples. De hecho, en esa pantalla de confirmación al " +
       "cerrar sesión, ni siquiera se entiende la pregunta.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u08-peak-end-a-confirmacion.png", alt: "Mensaje \"Has iniciado sesión satisfactoriamente\"" },
+      { src: "assets/img/u08-peak-end-b-seguro.png", alt: "Diálogo de confirmación \"¿Está seguro?\"" },
+    ],
   },
   {
     numero: 9,
@@ -118,7 +153,7 @@ const LEYES_UX = [
       "No hay recordatorios claros de tareas pendientes o procesos " +
       "incompletos que ayuden a recordar qué falta hacer y faciliten " +
       "retomarlo.",
-    captura: null,
+    capturas: [],
     sinEvidencia: "No hay evidencia ya que no lo cumple.",
   },
   {
@@ -128,7 +163,9 @@ const LEYES_UX = [
     descripcion:
       "No se muestra en un lugar intuitivo cuánto falta para terminar un " +
       "proceso ni qué es lo que falta concretamente.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u10-gradiente-meta.png", alt: "Listado de solicitudes con barra de progreso" },
+    ],
   },
   {
     numero: 11,
@@ -137,7 +174,9 @@ const LEYES_UX = [
     descripcion:
       "Usa íconos similares a la vida real o patrones que la gente ya ha " +
       "usado.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u11-jakob.png", alt: "Pantalla de bienvenida con íconos convencionales" },
+    ],
   },
   {
     numero: 12,
@@ -146,7 +185,9 @@ const LEYES_UX = [
     descripcion:
       "Los formularios permiten casi en su totalidad solo respuestas " +
       "predeterminadas.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u12-postel.png", alt: "Formulario de trámite con solo opciones desplegables predeterminadas" },
+    ],
   },
   {
     numero: 13,
@@ -155,7 +196,9 @@ const LEYES_UX = [
     descripcion:
       "Al entrar a algunas secciones se muestra una barra de carga, en la " +
       "minoría.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u13-doherty.png", alt: "Barra de carga al 88% en el navegador" },
+    ],
   },
   {
     numero: 14,
@@ -165,7 +208,9 @@ const LEYES_UX = [
       "Funciones frecuentes como Clases, Inscripciones o Notas no tienen " +
       "una jerarquía claramente superior a opciones menos frecuentes como " +
       "Suscripción, Condiciones o +Udesa.",
-    captura: null,
+    capturas: [
+      { src: "assets/img/u14-pareto.png", alt: "Menú lateral sin jerarquía entre opciones frecuentes y poco frecuentes" },
+    ],
   },
 ];
 
@@ -173,8 +218,9 @@ const LEYES_UX = [
  * Severidad 0–4 según la escala definida:
  * 0 Sin problema · 1 Cosmético · 2 Menor · 3 Mayor · 4 Catástrofe de usabilidad
  *
- * "impacto" no existía en el Excel/PDF original: queda como PLACEHOLDER
- * explícito hasta que se redacte con la información real.
+ * "impacto" no existía en el Excel/PDF original: se deja en null a
+ * propósito (ver nota al inicio del archivo) y la interfaz debe
+ * mostrar que el dato no fue incluido en el análisis, no inventarlo.
  */
 const HEURISTICAS_NIELSEN = [
   {
@@ -188,7 +234,9 @@ const HEURISTICAS_NIELSEN = [
       "la inscripción\" es posible que no haya más cupos y no puedas " +
       "finalizar la acción.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n01-visibilidad.png", alt: "Pantalla de modificación de inscripción sin confirmación" },
+    ],
   },
   {
     numero: 2,
@@ -198,7 +246,13 @@ const HEURISTICAS_NIELSEN = [
       "A través de esos íconos del mundo real, el usuario puede entender " +
       "ciertos botones o secciones sin leer el título.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n02-correspondencia-e-completa.png", alt: "Portal con menú de íconos y usuario logueado" },
+      { src: "assets/img/n02-correspondencia-d-menu.png", alt: "Menú lateral con íconos reconocibles" },
+      { src: "assets/img/n02-correspondencia-a-alerta.png", alt: "Aviso \"You are already signed in\"" },
+      { src: "assets/img/n02-correspondencia-b-mensajes.png", alt: "Ícono de mensajes" },
+      { src: "assets/img/n02-correspondencia-c-usuario.png", alt: "Badge de usuario \"Sofía Heine\"" },
+    ],
   },
   {
     numero: 3,
@@ -206,7 +260,10 @@ const HEURISTICAS_NIELSEN = [
     severidad: 0,
     explicacion: "La navegación permite volver a otras secciones o terminar procesos.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n03-control-libertad-a-volver.png", alt: "Botón \"Cambiar de sección\"" },
+      { src: "assets/img/n03-control-libertad-b-pago.png", alt: "Modal de pago online con opción de cerrar" },
+    ],
   },
   {
     numero: 4,
@@ -217,7 +274,9 @@ const HEURISTICAS_NIELSEN = [
       "borde superior derecho y que el menú desplegable esté en vertical a " +
       "la izquierda.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n04-consistencia.png", alt: "Portal con usuario arriba a la derecha y menú vertical a la izquierda" },
+    ],
   },
   {
     numero: 5,
@@ -229,7 +288,9 @@ const HEURISTICAS_NIELSEN = [
       "incorrecta. Alguna pista de este estilo podría ser que se necesita " +
       "algún número o cierta cantidad de caracteres.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n05-prevencion-errores.png", alt: "Formulario de login sin requisitos de contraseña visibles" },
+    ],
   },
   {
     numero: 6,
@@ -244,7 +305,9 @@ const HEURISTICAS_NIELSEN = [
       "legajo, pero en realidad forma parte de un subtítulo de datos " +
       "académicos.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n06-reconocimiento.png", alt: "Pestaña de Datos Académicos donde se encuentra el legajo" },
+    ],
   },
   {
     numero: 7,
@@ -255,7 +318,7 @@ const HEURISTICAS_NIELSEN = [
       "nuevas como las habituales deben recorrer prácticamente los mismos " +
       "pasos.",
     impacto: null,
-    captura: null,
+    capturas: [],
     sinEvidencia: "No hay evidencia ya que no existen dichos atajos.",
   },
   {
@@ -267,7 +330,9 @@ const HEURISTICAS_NIELSEN = [
       "dificulta encontrar rápido lo importante y vuelve la interfaz más " +
       "pesada.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n08-diseno-estetico.png", alt: "Calendario semanal con muchos bloques de clases superpuestos" },
+    ],
   },
   {
     numero: 9,
@@ -279,7 +344,9 @@ const HEURISTICAS_NIELSEN = [
       "o en la contraseña, lo cual no ayuda al usuario a resolver su " +
       "problema.",
     impacto: null,
-    captura: null,
+    capturas: [
+      { src: "assets/img/n09-ayudar-reconocer-errores.png", alt: "Mensaje \"Invalid login or password.\"" },
+    ],
   },
   {
     numero: 10,
@@ -291,7 +358,7 @@ const HEURISTICAS_NIELSEN = [
       "único que hay es un tutorial para las inscripciones que llega por " +
       "mail.",
     impacto: null,
-    captura: null,
+    capturas: [],
     sinEvidencia: "No hay evidencia porque no cuenta con sección de ayuda.",
   },
 ];

@@ -61,18 +61,38 @@ function renderFooter() {
   `;
 }
 
-/** Caja de placeholder para una captura de pantalla faltante. */
-function renderScreenshot(captura, altFallback) {
-  if (captura && captura.src) {
+/**
+ * Sección de capturas de una evaluación.
+ * - Sin capturas y con nota de "sin evidencia" -> se muestra esa nota,
+ *   tal como está en el análisis original (no se inventa una imagen).
+ * - Sin capturas y sin nota -> placeholder neutro.
+ * - Una o más capturas reales -> se muestran como galería (grid).
+ */
+function renderScreenshotSection(capturas, sinEvidencia, altFallback) {
+  if (capturas && capturas.length > 0) {
+    const galleryClass = capturas.length > 1 ? "screenshot-gallery" : "";
+    const items = capturas
+      .map(
+        (cap) => `
+        <div class="screenshot-frame">
+          <img src="${escapeHtml(cap.src)}" alt="${escapeHtml(cap.alt || altFallback)}" loading="lazy" />
+        </div>`
+      )
+      .join("");
+    return `<div class="${galleryClass}">${items}</div>`;
+  }
+
+  if (sinEvidencia) {
     return `
-      <div class="screenshot-frame">
-        <img src="${escapeHtml(captura.src)}" alt="${escapeHtml(captura.alt || altFallback)}" loading="lazy" />
+      <div class="placeholder-box" role="note">
+        Sin captura: el análisis original indica "${escapeHtml(sinEvidencia)}"
       </div>
     `;
   }
+
   return `
-    <div class="placeholder-box placeholder-box--tag" role="img" aria-label="Captura de pantalla pendiente para: ${escapeHtml(altFallback)}">
-      Captura pendiente de extracción / carga
+    <div class="placeholder-box placeholder-box--tag" role="img" aria-label="Sin captura registrada para: ${escapeHtml(altFallback)}">
+      Sin captura registrada en el análisis original
     </div>
   `;
 }
@@ -102,10 +122,6 @@ function renderSeveridadBadge(nivel) {
 
 /** Tarjeta de evaluación para una Ley UX. */
 function renderLeyCard(ley) {
-  const evidenciaExtra = ley.sinEvidencia
-    ? `<p class="placeholder-text">${escapeHtml(ley.sinEvidencia)}</p>`
-    : "";
-
   return `
     <article class="eval-card">
       <div class="eval-card__main">
@@ -119,12 +135,11 @@ function renderLeyCard(ley) {
         <div class="eval-card__body">
           <h3>Explicación / análisis</h3>
           <p>${escapeHtml(ley.descripcion)}</p>
-          ${evidenciaExtra}
         </div>
       </div>
       <div class="eval-card__media">
         <h3>Captura de pantalla</h3>
-        ${renderScreenshot(ley.captura, ley.nombre)}
+        ${renderScreenshotSection(ley.capturas, ley.sinEvidencia, ley.nombre)}
       </div>
     </article>
   `;
@@ -132,13 +147,9 @@ function renderLeyCard(ley) {
 
 /** Tarjeta de evaluación para una heurística de Nielsen. */
 function renderHeuristicaCard(h) {
-  const evidenciaExtra = h.sinEvidencia
-    ? `<p class="placeholder-text">${escapeHtml(h.sinEvidencia)}</p>`
-    : "";
-
   const impactoHtml = h.impacto
     ? `<p>${escapeHtml(h.impacto)}</p>`
-    : `<p class="placeholder-text">PLACEHOLDER — completar impacto en la persona usuaria.</p>`;
+    : `<p class="placeholder-text">No incluido en el análisis original (el Excel de trabajo no registra este campo).</p>`;
 
   return `
     <article class="eval-card">
@@ -153,7 +164,6 @@ function renderHeuristicaCard(h) {
         <div class="eval-card__body">
           <h3>Explicación</h3>
           <p>${escapeHtml(h.explicacion)}</p>
-          ${evidenciaExtra}
         </div>
         <div class="eval-card__body impact">
           <h3>Impacto en la persona usuaria</h3>
@@ -162,7 +172,7 @@ function renderHeuristicaCard(h) {
       </div>
       <div class="eval-card__media">
         <h3>Captura de pantalla</h3>
-        ${renderScreenshot(h.captura, h.nombre)}
+        ${renderScreenshotSection(h.capturas, h.sinEvidencia, h.nombre)}
       </div>
     </article>
   `;

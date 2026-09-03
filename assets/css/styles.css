@@ -519,6 +519,19 @@ main {
   height: auto;
 }
 
+/* Galería: cuando una evaluación tiene más de una captura real. */
+.screenshot-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+
+.screenshot-gallery .screenshot-frame img {
+  height: 140px;
+  object-fit: contain;
+  background: var(--color-surface);
+}
+
 /* ---------- Utility ---------- */
 
 .visually-hidden {
