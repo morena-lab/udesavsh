@@ -135,7 +135,7 @@ function renderScreenshotSection(capturas, sinEvidencia, altFallback) {
 
 /** Badge de estado para una Ley UX: Cumple / Rompe / Cumple parcialmente. */
 function renderEstadoBadge(estado, size) {
-  const icon = estado === "cumple" ? "✓" : estado === "rompe" ? "✕" : "±";
+  const icon = estado === "cumple" ? "✓" : estado === "rompe" ? "✕" : "~";
   const label = ESTADO_LABELS[estado] || estado;
   const sizeClass = size === "sm" ? " badge--sm" : "";
   return `
