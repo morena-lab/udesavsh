@@ -250,7 +250,6 @@ const HEURISTICAS_NIELSEN = [
       "ciertos botones o secciones sin leer el título.",
     impacto: "Al reconocer los íconos sin depender de instrucciones adicionales, el usuario se orienta más rápido dentro de la plataforma y reduce el esfuerzo necesario para encontrar la sección que busca.",
     capturas: [
-      { src: "assets/img/n02-correspondencia-e-completa.png", alt: "Portal con menú de íconos y usuario logueado" },
       { src: "assets/img/n02-correspondencia-d-menu.png", alt: "Menú lateral con íconos reconocibles" },
       { src: "assets/img/n02-correspondencia-a-alerta.png", alt: "Aviso \"You are already signed in\"" },
       { src: "assets/img/n02-correspondencia-b-mensajes.png", alt: "Ícono de mensajes" },
