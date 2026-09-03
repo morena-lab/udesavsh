@@ -19,9 +19,11 @@
  * ninguna.
  *
  * El campo "impacto" de las heurísticas de Nielsen no existe en el
- * Excel/PDF original: se deja explícitamente en null y la interfaz
- * lo señala como dato no incluido en el análisis, en vez de
- * inventarlo.
+ * Excel/PDF original. A pedido explícito del equipo, se redactó a
+ * partir de la propia explicación/severidad ya documentada para cada
+ * heurística (no incorpora datos nuevos sobre la plataforma). La
+ * interfaz señala que este campo fue agregado por el equipo y no
+ * forma parte del Excel original.
  * ------------------------------------------------------------------
  */
 
@@ -218,9 +220,10 @@ const LEYES_UX = [
  * Severidad 0–4 según la escala definida:
  * 0 Sin problema · 1 Cosmético · 2 Menor · 3 Mayor · 4 Catástrofe de usabilidad
  *
- * "impacto" no existía en el Excel/PDF original: se deja en null a
- * propósito (ver nota al inicio del archivo) y la interfaz debe
- * mostrar que el dato no fue incluido en el análisis, no inventarlo.
+ * "impacto" no existía en el Excel/PDF original: fue redactado por el
+ * equipo en base a la explicación y severidad ya documentadas para
+ * cada heurística (ver nota al inicio del archivo). La interfaz
+ * indica que este campo es un agregado del equipo.
  */
 const HEURISTICAS_NIELSEN = [
   {
@@ -233,7 +236,7 @@ const HEURISTICAS_NIELSEN = [
       "lograrlo. Es más, al tocar el botón de \"Confirmar modificaciones a " +
       "la inscripción\" es posible que no haya más cupos y no puedas " +
       "finalizar la acción.",
-    impacto: null,
+    impacto: "Al no recibir confirmación del cambio de inscripción, el usuario queda inseguro de si la acción se realizó correctamente y puede terminar reintentando el proceso, o creyendo que quedó inscripto en una clase que en realidad no se guardó.",
     capturas: [
       { src: "assets/img/n01-visibilidad.png", alt: "Pantalla de modificación de inscripción sin confirmación" },
     ],
@@ -245,7 +248,7 @@ const HEURISTICAS_NIELSEN = [
     explicacion:
       "A través de esos íconos del mundo real, el usuario puede entender " +
       "ciertos botones o secciones sin leer el título.",
-    impacto: null,
+    impacto: "Al reconocer los íconos sin depender de instrucciones adicionales, el usuario se orienta más rápido dentro de la plataforma y reduce el esfuerzo necesario para encontrar la sección que busca.",
     capturas: [
       { src: "assets/img/n02-correspondencia-e-completa.png", alt: "Portal con menú de íconos y usuario logueado" },
       { src: "assets/img/n02-correspondencia-d-menu.png", alt: "Menú lateral con íconos reconocibles" },
@@ -259,7 +262,7 @@ const HEURISTICAS_NIELSEN = [
     nombre: "Control y libertad del usuario",
     severidad: 0,
     explicacion: "La navegación permite volver a otras secciones o terminar procesos.",
-    impacto: null,
+    impacto: "Poder volver atrás o cerrar un proceso sin perder el hilo de lo que estaba haciendo le da al usuario sensación de control y evita que abandone una tarea por miedo a quedar \"atrapado\" en una pantalla.",
     capturas: [
       { src: "assets/img/n03-control-libertad-a-volver.png", alt: "Botón \"Cambiar de sección\"" },
       { src: "assets/img/n03-control-libertad-b-pago.png", alt: "Modal de pago online con opción de cerrar" },
@@ -273,7 +276,7 @@ const HEURISTICAS_NIELSEN = [
       "Cumple con el estándar general de que el usuario se ubique en el " +
       "borde superior derecho y que el menú desplegable esté en vertical a " +
       "la izquierda.",
-    impacto: null,
+    impacto: "Al respetar patrones ya conocidos de otras plataformas, el usuario puede aplicar lo que ya sabe de otros sitios y no necesita aprender desde cero cómo ubicarse en la interfaz.",
     capturas: [
       { src: "assets/img/n04-consistencia.png", alt: "Portal con usuario arriba a la derecha y menú vertical a la izquierda" },
     ],
@@ -287,7 +290,7 @@ const HEURISTICAS_NIELSEN = [
       "tiene la contraseña para evitar que el usuario escriba una " +
       "incorrecta. Alguna pista de este estilo podría ser que se necesita " +
       "algún número o cierta cantidad de caracteres.",
-    impacto: null,
+    impacto: "Al no anticipar los requisitos de la contraseña, el usuario puede acumular varios intentos fallidos de inicio de sesión antes de descubrir por prueba y error qué formato es válido, con la consiguiente pérdida de tiempo y frustración.",
     capturas: [
       { src: "assets/img/n05-prevencion-errores.png", alt: "Formulario de login sin requisitos de contraseña visibles" },
     ],
@@ -304,7 +307,7 @@ const HEURISTICAS_NIELSEN = [
       "buscar el legajo, uno esperaría que se encuentre en la sección " +
       "legajo, pero en realidad forma parte de un subtítulo de datos " +
       "académicos.",
-    impacto: null,
+    impacto: "Al no encontrar el legajo donde lo esperaría de forma intuitiva, el usuario debe recordar en qué subsección se encuentra en lugar de reconocerla a simple vista, lo que alarga una tarea simple y puede llevarlo a pedir ayuda externa.",
     capturas: [
       { src: "assets/img/n06-reconocimiento.png", alt: "Pestaña de Datos Académicos donde se encuentra el legajo" },
     ],
@@ -317,7 +320,7 @@ const HEURISTICAS_NIELSEN = [
       "Ninguna tarea tiene accesos rápidos ni atajos. Tanto las personas " +
       "nuevas como las habituales deben recorrer prácticamente los mismos " +
       "pasos.",
-    impacto: null,
+    impacto: "La falta de atajos no impide completar las tareas, pero obliga incluso a los usuarios frecuentes a repetir siempre el mismo recorrido completo, sin ganar velocidad con la práctica.",
     capturas: [],
     sinEvidencia: "No hay evidencia ya que no existen dichos atajos.",
   },
@@ -329,7 +332,7 @@ const HEURISTICAS_NIELSEN = [
       "Hay exceso de información y una jerarquía visual débil. Esto " +
       "dificulta encontrar rápido lo importante y vuelve la interfaz más " +
       "pesada.",
-    impacto: null,
+    impacto: "La sobrecarga de información y la jerarquía visual débil dificultan identificar lo relevante de un vistazo, obligando al usuario a leer y comparar manualmente bloques de información similares, lo que aumenta el riesgo de pasar por alto una clase o un dato importante.",
     capturas: [
       { src: "assets/img/n08-diseno-estetico.png", alt: "Calendario semanal con muchos bloques de clases superpuestos" },
     ],
@@ -343,7 +346,7 @@ const HEURISTICAS_NIELSEN = [
       "mensaje es el mismo. No especifica si el error está en el usuario " +
       "o en la contraseña, lo cual no ayuda al usuario a resolver su " +
       "problema.",
-    impacto: null,
+    impacto: "Al recibir siempre el mismo mensaje de error sin distinguir si falló el usuario o la contraseña, la persona no sabe qué corregir y puede terminar acumulando intentos fallidos o recurriendo a soporte técnico para poder ingresar.",
     capturas: [
       { src: "assets/img/n09-ayudar-reconocer-errores.png", alt: "Mensaje \"Invalid login or password.\"" },
     ],
@@ -357,7 +360,7 @@ const HEURISTICAS_NIELSEN = [
       "orienten al usuario cuando no sabe cómo realizar una acción. Lo " +
       "único que hay es un tutorial para las inscripciones que llega por " +
       "mail.",
-    impacto: null,
+    impacto: "Sin una sección de ayuda accesible desde la plataforma, el usuario que no recibió o no encuentra el tutorial enviado por mail queda sin ninguna guía para resolver dudas puntuales, lo que puede derivar en errores al completar procesos como la inscripción.",
     capturas: [],
     sinEvidencia: "No hay evidencia porque no cuenta con sección de ayuda.",
   },

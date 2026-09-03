@@ -35,9 +35,11 @@ en el navegador o servir la carpeta con cualquier servidor estático
 ## Datos que el análisis original no incluye
 
 - **Campo "impacto en la persona usuaria"** de cada heurística de
-  Nielsen: no existía en el Excel/PDF original. La interfaz lo declara
-  explícitamente como "No incluido en el análisis original" en vez de
-  inventarlo.
+  Nielsen: no existía en el Excel/PDF original. A pedido explícito del
+  equipo, se redactó a partir de la explicación y severidad ya
+  documentadas para cada heurística (no agrega datos nuevos sobre la
+  plataforma). La interfaz aclara, debajo de cada texto, que ese campo
+  fue agregado por el equipo y no forma parte del Excel original.
 - **3 evaluaciones sin captura**, tal como están en el análisis
   original (el propio documento dice "no hay evidencia"): Efecto
   Zeigarnik (Leyes UX), Flexibilidad y eficiencia de uso y Ayuda y
