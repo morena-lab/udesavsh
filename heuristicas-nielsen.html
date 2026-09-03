@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Heurísticas de Nielsen — Evaluación UX</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header" data-component="site-header"></header>
+
+  <main>
+    <div class="page-shell">
+      <section class="section-header">
+        <p class="section-header__eyebrow">Evaluación 2 de 2</p>
+        <h1>Heurísticas de Nielsen</h1>
+        <p>
+          Las <span data-component="heuristicas-count">—</span> heurísticas
+          de usabilidad de Jakob Nielsen, evaluadas con severidad de 0 a 4,
+          explicación e impacto en la persona usuaria.
+        </p>
+        <div class="legend" data-component="severidad-legend"></div>
+      </section>
+
+      <section aria-label="Listado de heurísticas de Nielsen">
+        <div class="card-grid" data-component="heuristicas-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" data-component="site-footer"></footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/render.js"></script>
+  <script>
+    renderHeader("heuristicas");
+    renderFooter();
+    renderHeuristicasPage();
+  </script>
+</body>
+</html>

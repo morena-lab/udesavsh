@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leyes UX — Evaluación UX</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header" data-component="site-header"></header>
+
+  <main>
+    <div class="page-shell">
+      <section class="section-header">
+        <p class="section-header__eyebrow">Evaluación 1 de 2</p>
+        <h1>Leyes UX</h1>
+        <p>
+          <span data-component="leyes-count">—</span> leyes y efectos de UX
+          evaluados sobre la plataforma, con su estado de cumplimiento,
+          explicación y evidencia visual.
+        </p>
+        <div class="legend" data-component="estado-legend"></div>
+      </section>
+
+      <section aria-label="Listado de leyes UX">
+        <div class="card-grid" data-component="leyes-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" data-component="site-footer"></footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/render.js"></script>
+  <script>
+    renderHeader("leyes");
+    renderFooter();
+    renderLeyesUXPage();
+  </script>
+</body>
+</html>

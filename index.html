@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evaluación UX — Inicio</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="site-header" data-component="site-header"></header>
+
+  <main>
+    <div class="page-shell">
+      <section class="hero">
+        <p class="hero__eyebrow">Trabajo de Experiencia de Usuario</p>
+        <h1 data-component="producto-nombre">Cargando…</h1>
+        <p class="hero__lede" data-component="producto-descripcion"></p>
+      </section>
+
+      <section aria-labelledby="accesos-heading">
+        <h2 id="accesos-heading" class="visually-hidden">Secciones de la evaluación</h2>
+        <div class="entry-grid">
+          <a class="entry-card" href="leyes-ux.html">
+            <p class="entry-card__count">
+              <span data-component="home-leyes-count">—</span> leyes documentadas
+            </p>
+            <h2>Leyes UX</h2>
+            <p>Revisión de las leyes y efectos de UX aplicados (o no) sobre la plataforma evaluada, con evidencia y estado de cumplimiento.</p>
+            <span class="entry-card__arrow">Ver evaluación →</span>
+          </a>
+          <a class="entry-card" href="heuristicas-nielsen.html">
+            <p class="entry-card__count">
+              <span data-component="home-heuristicas-count">—</span> heurísticas documentadas
+            </p>
+            <h2>Heurísticas de Nielsen</h2>
+            <p>Las 10 heurísticas de usabilidad de Nielsen, evaluadas con severidad 0–4, explicación e impacto en la persona usuaria.</p>
+            <span class="entry-card__arrow">Ver evaluación →</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer" data-component="site-footer"></footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/render.js"></script>
+  <script>
+    renderHeader("home");
+    renderFooter();
+    renderHomePage();
+  </script>
+</body>
+</html>
