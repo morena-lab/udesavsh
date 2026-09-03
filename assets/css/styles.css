@@ -320,15 +320,9 @@ main {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: var(--space-4);
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
-}
-
-@media (max-width: 780px) {
-  .eval-card {
-    grid-template-columns: 1fr;
-  }
 }
 
 .eval-card__main {
@@ -383,6 +377,8 @@ main {
 
 .eval-card__media {
   min-width: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
 .eval-card__media h3 {
@@ -508,28 +504,84 @@ main {
 }
 
 .screenshot-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 380px;
+  padding: var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--color-surface);
+  background: #f4f5f6;
+  cursor: zoom-in;
+  position: relative;
+  appearance: none;
+  font: inherit;
 }
 
 .screenshot-frame img {
-  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
   height: auto;
+  object-fit: contain;
 }
 
-/* Galería: cuando una evaluación tiene más de una captura real. */
+.screenshot-frame__hint {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(26, 26, 26, 0.72);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  pointer-events: none;
+}
+
+.screenshot-frame:hover .screenshot-frame__hint,
+.screenshot-frame:focus-visible .screenshot-frame__hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.screenshot-frame:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .screenshot-frame {
+    height: 260px;
+  }
+}
+
+/* Galería: cuando una evaluación tiene más de una captura real, cada
+   una conserva su propia proporción (sin deformarse) dentro de una
+   grilla de "stages" más chicos pero igual de nítidos y clickeables. */
 .screenshot-gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
 }
 
-.screenshot-gallery .screenshot-frame img {
-  height: 140px;
-  object-fit: contain;
-  background: var(--color-surface);
+.screenshot-gallery .screenshot-frame {
+  height: 220px;
+}
+
+@media (max-width: 640px) {
+  .screenshot-gallery .screenshot-frame {
+    height: 200px;
+  }
 }
 
 /* ---------- Utility ---------- */
@@ -694,7 +746,6 @@ html {
 
 /* Navegación anterior / siguiente al pie de cada tarjeta */
 .card-nav {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -730,4 +781,86 @@ html {
 .card-nav__index:hover,
 .card-nav__link:not(.card-nav__link--disabled):hover {
   text-decoration: underline;
+}
+
+/* ============================================================
+   Lightbox: ampliar una captura al hacer click, sin salir del
+   tablero. Una sola instancia compartida por página.
+   ============================================================ */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5) var(--space-4);
+  background: rgba(15, 17, 20, 0.86);
+}
+
+.lightbox[hidden] {
+  display: none;
+}
+
+.lightbox__figure {
+  position: relative;
+  max-width: min(1200px, 94vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.lightbox__img {
+  max-width: 100%;
+  max-height: calc(90vh - 48px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox__caption {
+  color: #f2f2f2;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.lightbox__close {
+  position: absolute;
+  top: -44px;
+  right: -8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox__close:hover,
+.lightbox__close:focus-visible {
+  background: rgba(0, 0, 0, 0.65);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .lightbox__close {
+    top: -40px;
+    right: 0;
+  }
+}
+
+body.lightbox-open {
+  overflow: hidden;
 }

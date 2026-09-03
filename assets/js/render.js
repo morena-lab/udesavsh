@@ -5,9 +5,10 @@
  * a partir de los datos en data.js. No hay backend ni build step:
  * este script corre en el navegador y arma el DOM directamente.
  *
- * Esta versión agrega: índice lateral navegable (con scrollspy),
- * anclas por evaluación, y navegación anterior/siguiente entre
- * tarjetas. No cambia ningún dato de data.js.
+ * Incluye: índice lateral navegable (con scrollspy), anclas por
+ * evaluación, navegación anterior/siguiente entre tarjetas, y un
+ * lightbox para ampliar cada captura de pantalla. No cambia ningún
+ * dato de data.js.
  * ------------------------------------------------------------------
  */
 
@@ -66,22 +67,47 @@ function renderFooter() {
 }
 
 /**
+ * Si una imagen de evidencia no carga (ruta rota, archivo movido),
+ * reemplaza el contenido del frame por un aviso claro en vez de dejar
+ * el ícono de imagen rota del navegador, y deshabilita el click
+ * (no tiene sentido abrir un lightbox vacío).
+ */
+function handleScreenshotError(imgEl) {
+  const frame = imgEl.closest(".screenshot-frame");
+  if (!frame) return;
+  frame.classList.add("screenshot-frame--broken");
+  frame.innerHTML = '<span class="placeholder-text">No se pudo cargar esta captura.</span>';
+  if ("disabled" in frame) frame.disabled = true;
+  frame.style.cursor = "default";
+}
+
+/**
  * Sección de capturas de una evaluación.
  * - Sin capturas y con nota de "sin evidencia" -> se muestra esa nota,
  *   tal como está en el análisis original (no se inventa una imagen).
  * - Sin capturas y sin nota -> placeholder neutro.
- * - Una o más capturas reales -> se muestran como galería (grid).
+ * - Una o más capturas reales -> "stages" grandes, con proporción
+ *   original intacta (object-fit: contain, sin recortar ni deformar),
+ *   clickeables para ampliar en un lightbox.
  */
 function renderScreenshotSection(capturas, sinEvidencia, altFallback) {
   if (capturas && capturas.length > 0) {
     const galleryClass = capturas.length > 1 ? "screenshot-gallery" : "";
     const items = capturas
-      .map(
-        (cap) => `
-        <div class="screenshot-frame">
-          <img src="${escapeHtml(cap.src)}" alt="${escapeHtml(cap.alt || altFallback)}" loading="lazy" />
-        </div>`
-      )
+      .map((cap) => {
+        const alt = cap.alt || altFallback;
+        return `
+        <button
+          type="button"
+          class="screenshot-frame"
+          data-lightbox-src="${escapeHtml(cap.src)}"
+          data-lightbox-alt="${escapeHtml(alt)}"
+          aria-label="Ampliar captura: ${escapeHtml(alt)}"
+        >
+          <img src="${escapeHtml(cap.src)}" alt="${escapeHtml(alt)}" loading="lazy" onerror="handleScreenshotError(this)" />
+          <span class="screenshot-frame__hint" aria-hidden="true">🔍 Ampliar</span>
+        </button>`;
+      })
       .join("");
     return `<div class="${galleryClass}">${items}</div>`;
   }
@@ -298,6 +324,78 @@ function initScrollSpy(cardSelector) {
   cards.forEach((card) => observer.observe(card));
 }
 
+/**
+ * Lightbox compartido: una sola instancia por página que amplía la
+ * captura clickeada. Se puede cerrar con el botón ×, clickeando fuera
+ * de la imagen, o con la tecla Escape; al cerrar devuelve el foco al
+ * disparador para no perder el lugar en el teclado.
+ */
+let lightboxLastTrigger = null;
+
+function ensureLightbox() {
+  let box = document.querySelector(".lightbox");
+  if (box) return box;
+
+  box = document.createElement("div");
+  box.className = "lightbox";
+  box.hidden = true;
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-modal", "true");
+  box.setAttribute("aria-label", "Captura ampliada");
+  box.innerHTML = `
+    <figure class="lightbox__figure">
+      <button type="button" class="lightbox__close" aria-label="Cerrar (Esc)">×</button>
+      <img class="lightbox__img" src="" alt="" />
+      <figcaption class="lightbox__caption"></figcaption>
+    </figure>
+  `;
+  document.body.appendChild(box);
+
+  box.addEventListener("click", (event) => {
+    if (event.target === box) closeLightbox();
+  });
+  box.querySelector(".lightbox__close").addEventListener("click", closeLightbox);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !box.hidden) closeLightbox();
+  });
+
+  return box;
+}
+
+function openLightbox(src, alt, triggerEl) {
+  const box = ensureLightbox();
+  const img = box.querySelector(".lightbox__img");
+  const caption = box.querySelector(".lightbox__caption");
+  img.src = src;
+  img.alt = alt || "";
+  caption.textContent = alt || "";
+  box.hidden = false;
+  document.body.classList.add("lightbox-open");
+  lightboxLastTrigger = triggerEl || null;
+  box.querySelector(".lightbox__close").focus();
+}
+
+function closeLightbox() {
+  const box = document.querySelector(".lightbox");
+  if (!box) return;
+  box.hidden = true;
+  document.body.classList.remove("lightbox-open");
+  if (lightboxLastTrigger && typeof lightboxLastTrigger.focus === "function") {
+    lightboxLastTrigger.focus();
+  }
+  lightboxLastTrigger = null;
+}
+
+/** Delega el click de cualquier captura (leyes o heurísticas) al lightbox. */
+function initLightboxTriggers() {
+  document.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-lightbox-src]");
+    if (!trigger || trigger.disabled) return;
+    openLightbox(trigger.getAttribute("data-lightbox-src"), trigger.getAttribute("data-lightbox-alt"), trigger);
+  });
+}
+
 /** Arma la grilla de tarjetas de Leyes UX + su índice navegable. */
 function renderLeyesUXPage() {
   const grid = document.querySelector("[data-component='leyes-grid']");
@@ -314,6 +412,7 @@ function renderLeyesUXPage() {
   renderIndex(index, "ley", LEYES_UX);
 
   initScrollSpy("[data-component='leyes-grid'] .eval-card");
+  initLightboxTriggers();
 }
 
 /** Arma la grilla de tarjetas de Heurísticas de Nielsen + su índice navegable. */
@@ -332,6 +431,7 @@ function renderHeuristicasPage() {
   renderIndex(index, "heuristica", HEURISTICAS_NIELSEN);
 
   initScrollSpy("[data-component='heuristicas-grid'] .eval-card");
+  initLightboxTriggers();
 }
 
 /** Completa los datos del producto en la home. */
