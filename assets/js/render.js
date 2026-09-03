@@ -166,11 +166,11 @@ function renderCardNav(kind, items, currentIndex) {
   const indexHref = `#${INDEX_ANCHOR_ID[kind]}`;
 
   const prevHtml = prev
-    ? `<a class="card-nav__link card-nav__link--prev" href="#${prefix}-${prev.numero}">← ${escapeHtml(prev.nombre)}</a>`
+    ? `<a class="card-nav__link card-nav__link--prev" href="#${prefix}-${prev.numero}">← Anterior</a>`
     : `<span class="card-nav__link card-nav__link--disabled">← Anterior</span>`;
 
   const nextHtml = next
-    ? `<a class="card-nav__link card-nav__link--next" href="#${prefix}-${next.numero}">${escapeHtml(next.nombre)} →</a>`
+    ? `<a class="card-nav__link card-nav__link--next" href="#${prefix}-${next.numero}">Siguiente →</a>`
     : `<span class="card-nav__link card-nav__link--disabled">Siguiente →</span>`;
 
   return `

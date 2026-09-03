@@ -29,7 +29,7 @@ const PRODUCTO_EVALUADO = {
   // Confirmado a partir de una de las propias capturas del análisis
   // (barra de direcciones visible en la evidencia de "Umbral de
   // Doherty"): el dominio real de la plataforma es gestion.udesa.edu.ar.
-  nombre: "Plataforma de Gestión de Alumnos — Universidad de San Andrés (gestion.udesa.edu.ar)",
+  nombre: "Plataforma de Gestión de Alumnos — Universidad de San Andrés",
   descripcion:
     "Evaluación heurística y de leyes de UX realizada sobre la plataforma " +
     "de autogestión académica utilizada por estudiantes. El análisis " +
