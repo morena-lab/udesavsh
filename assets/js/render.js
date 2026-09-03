@@ -158,12 +158,11 @@ function renderSeveridadBadge(nivel, size) {
   `;
 }
 
-/** Fila de navegación anterior/siguiente + volver al índice, para el pie de cada tarjeta. */
+/** Fila de navegación anterior/siguiente, para el pie de cada tarjeta (solo flechas, sin nombre ni link al índice). */
 function renderCardNav(kind, items, currentIndex) {
   const prev = items[currentIndex - 1];
   const next = items[currentIndex + 1];
   const prefix = kind === "ley" ? "ley" : "heuristica";
-  const indexHref = `#${INDEX_ANCHOR_ID[kind]}`;
 
   const prevHtml = prev
     ? `<a class="card-nav__link card-nav__link--prev" href="#${prefix}-${prev.numero}">← Anterior</a>`
@@ -176,7 +175,6 @@ function renderCardNav(kind, items, currentIndex) {
   return `
     <div class="card-nav">
       ${prevHtml}
-      <a class="card-nav__index" href="${indexHref}">Índice ↑</a>
       ${nextHtml}
     </div>
   `;
