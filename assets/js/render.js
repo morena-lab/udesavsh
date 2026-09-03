@@ -209,7 +209,7 @@ function renderLeyCard(ley, index, items) {
 /** Tarjeta de evaluación para una heurística de Nielsen. */
 function renderHeuristicaCard(h, index, items) {
   const impactoHtml = h.impacto
-    ? `<p>${escapeHtml(h.impacto)}</p><p class="impact__note">Agregado por el equipo a partir de la evaluación documentada; no forma parte del Excel original.</p>`
+    ? `<p>${escapeHtml(h.impacto)}</p>`
     : `<p class="placeholder-text">No incluido en el análisis original (el Excel de trabajo no registra este campo).</p>`;
 
   return `

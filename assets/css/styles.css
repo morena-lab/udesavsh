@@ -488,13 +488,6 @@ main {
   color: var(--color-accent);
 }
 
-.impact__note {
-  margin-top: var(--space-1);
-  font-size: 0.78rem;
-  font-style: italic;
-  color: var(--color-placeholder-text);
-}
-
 /* ---------- Placeholder (captura / contenido pendiente) ---------- */
 
 .placeholder-box {
