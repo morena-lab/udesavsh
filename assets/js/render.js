@@ -121,7 +121,7 @@ function renderScreenshotSection(capturas, sinEvidencia, altFallback) {
   if (sinEvidencia) {
     return `
       <div class="placeholder-box" role="note">
-        Sin captura: el análisis original indica "${escapeHtml(sinEvidencia)}"
+        "${escapeHtml(sinEvidencia)}"
       </div>
     `;
   }
@@ -198,7 +198,7 @@ function renderLeyCard(ley, index, items) {
         </div>
       </div>
       <div class="eval-card__media">
-        <h3>Captura de pantalla</h3>
+        <h3>Evidencia</h3>
         ${renderScreenshotSection(ley.capturas, ley.sinEvidencia, ley.nombre)}
       </div>
       ${renderCardNav("ley", items, index)}
@@ -235,7 +235,7 @@ function renderHeuristicaCard(h, index, items) {
         </div>
       </div>
       <div class="eval-card__media">
-        <h3>Captura de pantalla</h3>
+        <h3>Evidencia</h3>
         ${renderScreenshotSection(h.capturas, h.sinEvidencia, h.nombre)}
       </div>
       ${renderCardNav("heuristica", items, index)}
